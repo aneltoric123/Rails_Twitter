@@ -1,0 +1,148 @@
+  [1m[35m (673.7ms)[0m  [1m[35mCREATE DATABASE "twitter_copy_development" ENCODING = 'unicode'[0m
+  [1m[35m (441.9ms)[0m  [1m[35mCREATE DATABASE "twitter_copy_test" ENCODING = 'unicode'[0m
+  [1m[35m (43.0ms)[0m  [1m[35mCREATE TABLE "schema_migrations" ("version" character varying NOT NULL PRIMARY KEY)[0m
+  [1m[35m (22.7ms)[0m  [1m[35mCREATE TABLE "ar_internal_metadata" ("key" character varying NOT NULL PRIMARY KEY, "value" character varying, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[35m (1.2ms)[0m  [1m[34mSELECT pg_try_advisory_lock(3695324512974195780)[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.9ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mActiveRecord::InternalMetadata Load (1.7ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "environment"]]
+  [1m[36mActiveRecord::InternalMetadata Create (10.8ms)[0m  [1m[32mINSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ('environment', 'development', '2023-12-07 08:15:34.827971', '2023-12-07 08:15:34.827976') RETURNING "key"[0m
+Migrating to CreateUsers (20231207073422)
+  [1m[36mTRANSACTION (0.5ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (22.8ms)[0m  [1m[35mCREATE TABLE "users" ("id" bigserial primary key, "name" character varying, "surname" character varying, "username" character varying, "email" character varying, "password_digest" character varying, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.9ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20231207073422') RETURNING "version"[0m
+  [1m[36mTRANSACTION (3.3ms)[0m  [1m[35mCOMMIT[0m
+Migrating to CreateTweets (20231207073758)
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (20.9ms)[0m  [1m[35mCREATE TABLE "tweets" ("id" bigserial primary key, "user_id" bigint NOT NULL, "content" text, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL, CONSTRAINT "fk_rails_003928b7f5"
+FOREIGN KEY ("user_id")
+  REFERENCES "users" ("id")
+)[0m
+  [1m[35m (13.6ms)[0m  [1m[35mCREATE INDEX "index_tweets_on_user_id" ON "tweets" ("user_id")[0m
+  [1m[36mActiveRecord::SchemaMigration Create (1.4ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20231207073758') RETURNING "version"[0m
+  [1m[36mTRANSACTION (3.5ms)[0m  [1m[35mCOMMIT[0m
+Migrating to CreateComments (20231207073839)
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (18.7ms)[0m  [1m[35mCREATE TABLE "comments" ("id" bigserial primary key, "user_id" bigint NOT NULL, "tweet_id" bigint NOT NULL, "content" text, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL, CONSTRAINT "fk_rails_03de2dc08c"
+FOREIGN KEY ("user_id")
+  REFERENCES "users" ("id")
+, CONSTRAINT "fk_rails_bea193dd32"
+FOREIGN KEY ("tweet_id")
+  REFERENCES "tweets" ("id")
+)[0m
+  [1m[35m (8.2ms)[0m  [1m[35mCREATE INDEX "index_comments_on_user_id" ON "comments" ("user_id")[0m
+  [1m[35m (7.2ms)[0m  [1m[35mCREATE INDEX "index_comments_on_tweet_id" ON "comments" ("tweet_id")[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.7ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20231207073839') RETURNING "version"[0m
+  [1m[36mTRANSACTION (3.5ms)[0m  [1m[35mCOMMIT[0m
+Migrating to CreateLikes (20231207073921)
+  [1m[36mTRANSACTION (0.4ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (19.5ms)[0m  [1m[35mCREATE TABLE "likes" ("id" bigserial primary key, "user_id" bigint NOT NULL, "tweet_id" bigint NOT NULL, "like_number" character varying, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL, CONSTRAINT "fk_rails_1e09b5dabf"
+FOREIGN KEY ("user_id")
+  REFERENCES "users" ("id")
+, CONSTRAINT "fk_rails_d994727f92"
+FOREIGN KEY ("tweet_id")
+  REFERENCES "tweets" ("id")
+)[0m
+  [1m[35m (8.4ms)[0m  [1m[35mCREATE INDEX "index_likes_on_user_id" ON "likes" ("user_id")[0m
+  [1m[35m (7.2ms)[0m  [1m[35mCREATE INDEX "index_likes_on_tweet_id" ON "likes" ("tweet_id")[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.5ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20231207073921') RETURNING "version"[0m
+  [1m[36mTRANSACTION (3.5ms)[0m  [1m[35mCOMMIT[0m
+Migrating to CreateRetweets (20231207074023)
+  [1m[36mTRANSACTION (0.4ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (19.7ms)[0m  [1m[35mCREATE TABLE "retweets" ("id" bigserial primary key, "user_id" bigint NOT NULL, "tweet_id" bigint NOT NULL, "retweet_number" character varying, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL, CONSTRAINT "fk_rails_89fc1788e5"
+FOREIGN KEY ("user_id")
+  REFERENCES "users" ("id")
+, CONSTRAINT "fk_rails_05003de183"
+FOREIGN KEY ("tweet_id")
+  REFERENCES "tweets" ("id")
+)[0m
+  [1m[35m (7.7ms)[0m  [1m[35mCREATE INDEX "index_retweets_on_user_id" ON "retweets" ("user_id")[0m
+  [1m[35m (7.3ms)[0m  [1m[35mCREATE INDEX "index_retweets_on_tweet_id" ON "retweets" ("tweet_id")[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.7ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20231207074023') RETURNING "version"[0m
+  [1m[36mTRANSACTION (3.7ms)[0m  [1m[35mCOMMIT[0m
+Migrating to CreateHashtags (20231207074242)
+  [1m[36mTRANSACTION (0.5ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (17.9ms)[0m  [1m[35mCREATE TABLE "hashtags" ("id" bigserial primary key, "hashtag" character varying, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.6ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20231207074242') RETURNING "version"[0m
+  [1m[36mTRANSACTION (3.4ms)[0m  [1m[35mCOMMIT[0m
+Migrating to CreateHashtagtweets (20231207074336)
+  [1m[36mTRANSACTION (0.4ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (12.5ms)[0m  [1m[35mCREATE TABLE "hashtagtweets" ("id" bigserial primary key, "hashtag_id" bigint NOT NULL, "tweet_id" bigint NOT NULL, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL, CONSTRAINT "fk_rails_20f5f40a47"
+FOREIGN KEY ("hashtag_id")
+  REFERENCES "hashtags" ("id")
+, CONSTRAINT "fk_rails_5b61a5eed9"
+FOREIGN KEY ("tweet_id")
+  REFERENCES "tweets" ("id")
+)[0m
+  [1m[35m (7.7ms)[0m  [1m[35mCREATE INDEX "index_hashtagtweets_on_hashtag_id" ON "hashtagtweets" ("hashtag_id")[0m
+  [1m[35m (7.5ms)[0m  [1m[35mCREATE INDEX "index_hashtagtweets_on_tweet_id" ON "hashtagtweets" ("tweet_id")[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.7ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20231207074336') RETURNING "version"[0m
+  [1m[36mTRANSACTION (3.8ms)[0m  [1m[35mCOMMIT[0m
+Migrating to CreateConversations (20231207074640)
+  [1m[36mTRANSACTION (0.4ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (12.6ms)[0m  [1m[35mCREATE TABLE "conversations" ("id" bigserial primary key, "sender_id" bigint NOT NULL, "receiver_id" bigint NOT NULL, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL, CONSTRAINT "fk_rails_2855ab3029"
+FOREIGN KEY ("sender_id")
+  REFERENCES "senders" ("id")
+, CONSTRAINT "fk_rails_f4e4d987ce"
+FOREIGN KEY ("receiver_id")
+  REFERENCES "receivers" ("id")
+)[0m
+  [1m[36mTRANSACTION (0.5ms)[0m  [1m[31mROLLBACK[0m
+  [1m[35m (0.5ms)[0m  [1m[34mSELECT pg_advisory_unlock(3695324512974195780)[0m
+  [1m[35m (0.6ms)[0m  [1m[34mSELECT pg_try_advisory_lock(3695324512974195780)[0m
+  [1m[36mActiveRecord::SchemaMigration Load (1.3ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mActiveRecord::InternalMetadata Load (2.3ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "environment"]]
+Migrating to CreateConversations (20231207074640)
+  [1m[36mTRANSACTION (0.6ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[31mROLLBACK[0m
+  [1m[35m (0.5ms)[0m  [1m[34mSELECT pg_advisory_unlock(3695324512974195780)[0m
+  [1m[35m (0.4ms)[0m  [1m[34mSELECT pg_try_advisory_lock(3695324512974195780)[0m
+  [1m[36mActiveRecord::SchemaMigration Load (1.5ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mActiveRecord::InternalMetadata Load (1.5ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "environment"]]
+Migrating to CreateConversations (20231207074640)
+  [1m[36mTRANSACTION (0.5ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.4ms)[0m  [1m[31mROLLBACK[0m
+  [1m[35m (0.6ms)[0m  [1m[34mSELECT pg_advisory_unlock(3695324512974195780)[0m
+  [1m[35m (0.7ms)[0m  [1m[34mSELECT pg_try_advisory_lock(3695324512974195780)[0m
+  [1m[36mActiveRecord::SchemaMigration Load (1.7ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mActiveRecord::InternalMetadata Load (1.5ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "environment"]]
+Migrating to CreateConversations (20231207074640)
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (13.9ms)[0m  [1m[35mCREATE TABLE "conversations" ("id" bigserial primary key, "sender_id" bigint NOT NULL, "receiver_id" bigint NOT NULL, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL, CONSTRAINT "fk_rails_2855ab3029"
+FOREIGN KEY ("sender_id")
+  REFERENCES "users" ("id")
+, CONSTRAINT "fk_rails_f4e4d987ce"
+FOREIGN KEY ("receiver_id")
+  REFERENCES "users" ("id")
+)[0m
+  [1m[35m (7.5ms)[0m  [1m[35mCREATE INDEX "index_conversations_on_sender_id" ON "conversations" ("sender_id")[0m
+  [1m[35m (7.5ms)[0m  [1m[35mCREATE INDEX "index_conversations_on_receiver_id" ON "conversations" ("receiver_id")[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.7ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20231207074640') RETURNING "version"[0m
+  [1m[36mTRANSACTION (4.7ms)[0m  [1m[35mCOMMIT[0m
+Migrating to CreateMessages (20231207074734)
+  [1m[36mTRANSACTION (0.6ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (25.7ms)[0m  [1m[35mCREATE TABLE "messages" ("id" bigserial primary key, "sender_id" bigint NOT NULL, "receiver_id" bigint NOT NULL, "conversation_id" bigint NOT NULL, "content" text, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL, CONSTRAINT "fk_rails_b8f26a382d"
+FOREIGN KEY ("sender_id")
+  REFERENCES "users" ("id")
+, CONSTRAINT "fk_rails_67c67d2963"
+FOREIGN KEY ("receiver_id")
+  REFERENCES "users" ("id")
+, CONSTRAINT "fk_rails_7f927086d2"
+FOREIGN KEY ("conversation_id")
+  REFERENCES "conversations" ("id")
+)[0m
+  [1m[35m (8.7ms)[0m  [1m[35mCREATE INDEX "index_messages_on_sender_id" ON "messages" ("sender_id")[0m
+  [1m[35m (7.7ms)[0m  [1m[35mCREATE INDEX "index_messages_on_receiver_id" ON "messages" ("receiver_id")[0m
+  [1m[35m (8.1ms)[0m  [1m[35mCREATE INDEX "index_messages_on_conversation_id" ON "messages" ("conversation_id")[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.7ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20231207074734') RETURNING "version"[0m
+  [1m[36mTRANSACTION (4.0ms)[0m  [1m[35mCOMMIT[0m
+Migrating to CreateProfiles (20231207074835)
+  [1m[36mTRANSACTION (0.5ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (21.0ms)[0m  [1m[35mCREATE TABLE "profiles" ("id" bigserial primary key, "user_id" bigint NOT NULL, "bio" text, "avatar" character varying, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL, CONSTRAINT "fk_rails_e424190865"
+FOREIGN KEY ("user_id")
+  REFERENCES "users" ("id")
+)[0m
+  [1m[35m (8.1ms)[0m  [1m[35mCREATE INDEX "index_profiles_on_user_id" ON "profiles" ("user_id")[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.9ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20231207074835') RETURNING "version"[0m
+  [1m[36mTRANSACTION (4.0ms)[0m  [1m[35mCOMMIT[0m
+  [1m[35m (0.7ms)[0m  [1m[34mSELECT pg_advisory_unlock(3695324512974195780)[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.7ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
