@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2023_12_12_082835) do
+ActiveRecord::Schema[7.1].define(version: 2023_12_14_081915) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -40,16 +40,6 @@ ActiveRecord::Schema[7.1].define(version: 2023_12_12_082835) do
     t.index ["reset_password_token"], name: "index_admin_users_on_reset_password_token", unique: true
   end
 
-  create_table "comments", force: :cascade do |t|
-    t.bigint "user_id", null: false
-    t.bigint "tweet_id", null: false
-    t.text "content"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["tweet_id"], name: "index_comments_on_tweet_id"
-    t.index ["user_id"], name: "index_comments_on_user_id"
-  end
-
   create_table "conversations", force: :cascade do |t|
     t.bigint "sender_id", null: false
     t.bigint "receiver_id", null: false
@@ -59,56 +49,52 @@ ActiveRecord::Schema[7.1].define(version: 2023_12_12_082835) do
     t.index ["sender_id"], name: "index_conversations_on_sender_id"
   end
 
-  create_table "hashtags", force: :cascade do |t|
-    t.string "hashtag"
+  create_table "hashtag_tweets", force: :cascade do |t|
+    t.bigint "tweet_id", null: false
+    t.bigint "hashtag_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["hashtag_id"], name: "index_hashtag_tweets_on_hashtag_id"
+    t.index ["tweet_id"], name: "index_hashtag_tweets_on_tweet_id"
   end
 
-  create_table "hashtagtweets", force: :cascade do |t|
-    t.bigint "hashtag_id", null: false
-    t.bigint "tweet_id", null: false
+  create_table "hashtags", force: :cascade do |t|
+    t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["hashtag_id"], name: "index_hashtagtweets_on_hashtag_id"
-    t.index ["tweet_id"], name: "index_hashtagtweets_on_tweet_id"
   end
 
   create_table "likes", force: :cascade do |t|
+    t.string "like_number"
     t.bigint "user_id", null: false
     t.bigint "tweet_id", null: false
-    t.string "like_number"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["tweet_id"], name: "index_likes_on_tweet_id"
     t.index ["user_id"], name: "index_likes_on_user_id"
   end
 
-  create_table "messages", force: :cascade do |t|
-    t.bigint "sender_id", null: false
-    t.bigint "receiver_id", null: false
-    t.bigint "conversation_id", null: false
-    t.text "content"
+  create_table "mentions", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "tweet_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["conversation_id"], name: "index_messages_on_conversation_id"
-    t.index ["receiver_id"], name: "index_messages_on_receiver_id"
-    t.index ["sender_id"], name: "index_messages_on_sender_id"
+    t.index ["tweet_id"], name: "index_mentions_on_tweet_id"
+    t.index ["user_id"], name: "index_mentions_on_user_id"
   end
 
-  create_table "profiles", force: :cascade do |t|
-    t.bigint "user_id", null: false
-    t.text "bio"
-    t.string "avatar"
+  create_table "messages", force: :cascade do |t|
+    t.string "text"
+    t.bigint "conversations_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["user_id"], name: "index_profiles_on_user_id"
+    t.index ["conversations_id"], name: "index_messages_on_conversations_id"
   end
 
   create_table "retweets", force: :cascade do |t|
+    t.string "retweet_number"
     t.bigint "user_id", null: false
     t.bigint "tweet_id", null: false
-    t.string "retweet_number"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["tweet_id"], name: "index_retweets_on_tweet_id"
@@ -116,16 +102,14 @@ ActiveRecord::Schema[7.1].define(version: 2023_12_12_082835) do
   end
 
   create_table "tweets", force: :cascade do |t|
-    t.bigint "user_id", null: false
     t.text "content"
+    t.bigint "user_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["user_id"], name: "index_tweets_on_user_id"
   end
 
   create_table "users", force: :cascade do |t|
-    t.string "name"
-    t.string "surname"
     t.string "username"
     t.string "email"
     t.string "password_digest"
@@ -133,18 +117,15 @@ ActiveRecord::Schema[7.1].define(version: 2023_12_12_082835) do
     t.datetime "updated_at", null: false
   end
 
-  add_foreign_key "comments", "tweets"
-  add_foreign_key "comments", "users"
   add_foreign_key "conversations", "users", column: "receiver_id"
   add_foreign_key "conversations", "users", column: "sender_id"
-  add_foreign_key "hashtagtweets", "hashtags"
-  add_foreign_key "hashtagtweets", "tweets"
+  add_foreign_key "hashtag_tweets", "hashtags"
+  add_foreign_key "hashtag_tweets", "tweets"
   add_foreign_key "likes", "tweets"
   add_foreign_key "likes", "users"
-  add_foreign_key "messages", "conversations"
-  add_foreign_key "messages", "users", column: "receiver_id"
-  add_foreign_key "messages", "users", column: "sender_id"
-  add_foreign_key "profiles", "users"
+  add_foreign_key "mentions", "tweets"
+  add_foreign_key "mentions", "users"
+  add_foreign_key "messages", "conversations", column: "conversations_id"
   add_foreign_key "retweets", "tweets"
   add_foreign_key "retweets", "users"
   add_foreign_key "tweets", "users"

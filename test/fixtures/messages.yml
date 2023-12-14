@@ -1,13 +1,9 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  sender: one
-  receiver: one
+  text: MyString
   conversation: one
-  content: MyText
 
 two:
-  sender: two
-  receiver: two
+  text: MyString
   conversation: two
-  content: MyText
