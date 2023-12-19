@@ -1,20 +1,15 @@
 Rails.application.routes.draw do
-  get 'messages/index'
-  get 'messages/create'
-  get 'hashtag_tweets/index'
-  get 'hashtags/show'
-  get 'retweets/create'
-  get 'retweets/destroy'
-  get 'likes/create'
-  get 'likes/destroy'
-  get 'tweets/show'
-  get 'tweets/edit'
-  get 'tweets/create'
-  get 'tweets/destroy'
-  get 'users/show'
-  get 'users/edit'
   devise_for :admin_users, ActiveAdmin::Devise.config
   ActiveAdmin.routes(self)
+  
+  resources :messages, only: [:index, :create] 
+  resources :hashtag_tweets, only: [:index]    
+  resources :hashtags, only: [:show]           
+  resources :retweets, only: [:create, :destroy] 
+  resources :likes, only: [:create, :destroy]   
+  resources :tweets, only: [:show, :edit, :create, :destroy]
+  resources :users, only: [:show, :edit] 
+
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
@@ -23,5 +18,5 @@ Rails.application.routes.draw do
 
   # Defines the root path route ("/")
   
-  root 'tweets#index'
+  root 'home#index'
 end
